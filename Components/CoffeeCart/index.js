@@ -1,35 +1,30 @@
 import React, { Component } from "react";
+import { observer } from "mobx-react";
 
 // NativeBase Components
 import { Text, List, Button } from "native-base";
+
+//Stores
+import cartStore from "../../Stores/CartStore";
 
 // Component
 import CartItem from "./CartItem";
 
 class CoffeeCart extends Component {
-  state = {
-    items: [
-      {
-        drink: "Latte",
-        option: "Small",
-        quantity: 2
-      },
-      {
-        drink: "Espresso",
-        option: "Large",
-        quantity: 1
-      }
-    ]
+  checkout = () => {
+    cartStore.checkoutCart();
+    alert("Thank you for your Patronage");
   };
+
   render() {
-    const cartItems = this.state.items.map(item => (
+    const cartItems = cartStore.items.map(item => (
       <CartItem item={item} key={`${item.drink} ${item.option}`} />
     ));
 
     return (
       <List>
         {cartItems}
-        <Button full danger>
+        <Button full danger onPress={this.checkout}>
           <Text>Checkout</Text>
         </Button>
       </List>
@@ -41,4 +36,4 @@ CoffeeCart.navigationOptions = {
   title: "Cart"
 };
 
-export default CoffeeCart;
+export default observer(CoffeeCart);

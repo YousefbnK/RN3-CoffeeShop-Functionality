@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import NumericInput from "react-native-numeric-input";
+import { observer } from "mobx-react";
 
 // NativeBase Components
 import {
@@ -16,17 +17,20 @@ import {
   Text
 } from "native-base";
 
+//Stores
+import coffeeStore from "../../Stores/CoffeeStore";
+
 // Style
 import styles from "./styles";
 
 //List
-import coffeeshops from "../CoffeeList/list";
 import CartButton from "../Buttons/CartButton";
+import cartStore from "../../Stores/CartStore";
 
 class CoffeeDetail extends Component {
   state = {
-    drink: "Cappuccino",
-    option: "Small",
+    drink: "Cappucino",
+    option: "small",
     quantity: 1
   };
 
@@ -40,9 +44,14 @@ class CoffeeDetail extends Component {
       option: value
     });
 
+  submitItems = () => {
+    cartStore.addItemsToCart(this.state);
+    this.setState({ quantity: 1 });
+  };
+
   render() {
     const coffeeshopID = this.props.navigation.getParam("coffeeshopID");
-    const coffeeshop = coffeeshops.find(
+    const coffeeshop = coffeeStore.coffeeshops.find(
       coffeeshop => coffeeshopID === coffeeshop.id
     );
     return (
@@ -58,7 +67,7 @@ class CoffeeDetail extends Component {
               </Left>
               <Body />
               <Right>
-                <Thumbnail bordered source={coffeeshop.img} />
+                <Thumbnail bordered source={{ uri: coffeeshop.img }} />
               </Right>
             </CardItem>
             <CardItem>
@@ -92,14 +101,19 @@ class CoffeeDetail extends Component {
             <CardItem>
               <Body style={styles.numericInput}>
                 <NumericInput
-                  value={this.state.value}
+                  minValue={1}
+                  value={this.state.quantity}
                   onChange={quantity => this.setState({ quantity })}
                   initValue={1}
                 />
               </Body>
 
               <Right>
-                <Button full style={styles.addButton}>
+                <Button
+                  full
+                  style={styles.addButton}
+                  onPress={this.submitItems}
+                >
                   <Text>Add</Text>
                 </Button>
               </Right>
@@ -116,4 +130,4 @@ CoffeeDetail.navigationOptions = ({ navigation }) => ({
   headerRight: <CartButton />
 });
 
-export default CoffeeDetail;
+export default observer(CoffeeDetail);

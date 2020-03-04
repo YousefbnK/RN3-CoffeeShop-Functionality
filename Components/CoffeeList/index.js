@@ -1,17 +1,24 @@
 import React from "react";
+import { observer } from "mobx-react";
 
 // NativeBase Components
-import { List, Content } from "native-base";
+import { List, Content, Container, Spinner } from "native-base";
 
 // Store
-import coffeeshops from "./list";
+import coffeeStore from "../../Stores/CoffeeStore";
 
 // Component
 import CoffeeItem from "./CoffeeItem";
 import CartButton from "../Buttons/CartButton";
 
 const CoffeeList = () => {
-  const coffeeshopList = coffeeshops.map(coffeeshop => (
+  if (coffeeStore.loading)
+    return (
+      <Container>
+        <Spinner color="grey" style={{ marginTop: 250 }}></Spinner>
+      </Container>
+    );
+  const coffeeshopList = coffeeStore.coffeeshops.map(coffeeshop => (
     <CoffeeItem coffeeshop={coffeeshop} key={coffeeshop.id} />
   ));
   return (
@@ -26,4 +33,4 @@ CoffeeList.navigationOptions = {
   headerRight: <CartButton />
 };
 
-export default CoffeeList;
+export default observer(CoffeeList);
